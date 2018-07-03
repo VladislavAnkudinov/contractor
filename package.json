@@ -1,0 +1,7 @@
+{
+  "main": "contractor",
+  "dependencies": {
+    "truffle": "^4.1.13",
+    "web3": "^1.0.0-beta.34"
+  }
+}
