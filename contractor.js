@@ -44,27 +44,21 @@ Promise.resolve()
   .then(decimals => console.log('decimals =', decimals))
   .then(() => web3.eth.estimateGas({...supplyTx, from: ETH_ADDRESS}))
   .then(estimateSupplyTx => {
-    console.log('estimateSupplyTx =', estimateSupplyTx)
     return web3.eth.sendTransaction({...supplyTx, gasLimit: '0x' + estimateSupplyTx.toString(16)})
-      .on('transactionHash', transactionHash => console.log('EV supplyTx transactionHash =', transactionHash))
-      // .on('receipt', receipt => console.log('EV receipt =', receipt))
-      // .on('confirmation', (confirmationNumber, receipt) => console.log('EV confirmationNumber =', confirmationNumber, 'receipt =', receipt))
-      // .on('error', (error, receipt) => console.log('EV error =', error.message, 'receipt =', receipt))
+      .on('transactionHash', transactionHash => console.log('FIRST supply tx, transactionHash =', transactionHash))
   })
-  .then(res => {
-    console.log('supplyTx, res =', res)
+  .then(() => web3.eth.estimateGas({...supplyTx, from: ETH_ADDRESS}))
+  .then(estimateSupplyTx => {
+    return web3.eth.sendTransaction({...supplyTx, gasLimit: '0x' + estimateSupplyTx.toString(16)})
+      .on('transactionHash', transactionHash => console.log('SECOND supply tx, transactionHash =', transactionHash))
   })
   .then(() => {
-    transferTx = tokenContract.methods.transfer(RET_ADDRESS, SUPPLY_AMOUNT)
+    transferTx = tokenContract.methods.transfer(RET_ADDRESS, SUPPLY_AMOUNT * 2)
     return transferTx.estimateGas({from: ETH_ADDRESS})
   })
   .then(estimateTransferTx => {
-    console.log('estimateTransferTx =', estimateTransferTx)
     return transferTx.send({from: ETH_ADDRESS, gasLimit: '0x' + estimateTransferTx.toString(16)})
-      .on('transactionHash', transactionHash => console.log('EV transferTx transactionHash =', transactionHash))
-  })
-  .then(res => {
-    console.log('transferTx, res =', res)
+      .on('transactionHash', transactionHash => console.log('RETURN transfer tx, transactionHash =', transactionHash))
   })
   .catch(error => console.log('main catch, error =', error.message))
 
